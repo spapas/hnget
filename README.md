@@ -1,6 +1,6 @@
 # Hnget
 
-**TODO: Add description**
+Retrieve info from HN API using elixir
 
 ## Installation
 
