@@ -12,7 +12,7 @@ defmodule FavReader do
   @spec parse_favs_from_user(String.t(), boolean(), integer(), MapSet.t()) :: MapSet.t()
   def parse_favs_from_user(username, comments, page \\ 1, favs \\ MapSet.new()) when is_binary(username) and is_boolean(comments) and is_integer(page) do
     url = get_fav_url(username, comments, page)
-    Logger.debug "Parsing #{url}"
+    #Logger.debug "Parsing #{url}"
 
     with {:get, {:ok, r}} <- {:get, HTTPoison.get(url)},
          {:dec, {:ok, doc}} <- {:dec, Floki.parse_document(r.body)} do
@@ -27,7 +27,9 @@ defmodule FavReader do
     else
       error ->
         Logger.warn("Username #{username} errored on page #{page} with comments #{comments}: #{error |> inspect}")
-        favs
+        #favs
+        # RETRY ...
+        parse_favs_from_user(username, comments, page, favs)
     end
   end
 
@@ -38,7 +40,7 @@ defmodule FavReader do
 
   def prepare_username_chunks() do
     {_num, names} = UserReader.get_initial_data
-    names |> Enum.filter(&is_binary/1) |> Enum.sort |> Enum.chunk_every(100)
+    names |> Enum.filter(&is_binary/1) |> Enum.sort |> Enum.chunk_every(1000)
 
   end
 
